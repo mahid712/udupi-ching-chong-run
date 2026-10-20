@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="kn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>ಉಡುಪಿ ಚಿಂಗ್ ಚಾಂಗ್ ರನ್ — The Udupi Ching Chong Run</title>
+<meta name="description" content="A comic arcade street runner through Coastal Karnataka (Udupi to Malpe). Dodge coastal traffic, jump barricades, sprint to victory!">
+<meta name="theme-color" content="#d00000">
+<meta property="og:title" content="ಉಡುಪಿ ಚಿಂಗ್ ಚಾಂಗ್ ರನ್ — The Udupi Ching Chong Run">
+<meta property="og:description" content="Dodge coastal traffic, jump barricades, reach Udupi Malpe!">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23d00000'/%3E%3Cpath d='M12 54h40V10z' fill='%23ffd23f' stroke='%231d1424' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Bangers&family=Noto+Sans+Kannada:wght@400..800&family=Yatra+One&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/yatra-one-v2.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/bangers-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/baloo2-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="loading">
+<noscript><p style="font:600 18px system-ui;padding:24px;color:#fff3dc;background:#2a1a10;height:100vh;margin:0">ಉಡುಪಿ ಚಿಂಗ್ ಚಾಂಗ್ ರನ್ needs JavaScript. Please enable it and reload.</p></noscript>
+<main id="app">
+<canvas id="game" aria-label="Game view"></canvas>
+<div class="halftone" aria-hidden="true"></div>
+<div class="loader" role="status" aria-label="Loading">
+<div class="ld-name">ಉಡುಪಿ ಚಿಂಗ್ ಚಾಂಗ್ ರನ್</div>
+<div class="ld-bar"><i></i></div>
+</div>
+<!-- HUD -->
+<div id="hud" class="hud hidden">
+<button id="quitBtn" class="hud-back" aria-label="Back to runner select">← BACK</button>
+<div id="hpWrap" class="hp" style="--hp:1">
+<span class="hp-label">ಜೀವ</span>
+<div class="hp-bar"><i class="hp-fill"></i><span class="hp-mid"></span></div>
+<b id="hpTxt">100%</b>
+</div>
+<div class="route">
+<div class="track"><i id="progFill"></i><span id="runner" class="runner"></span></div>
+<svg class="jm-mini" viewBox="0 0 40 34" aria-hidden="true"><path d="M3 31h34V3z" fill="#ffb703" stroke="#1d1424" stroke-width="3" stroke-linejoin="round"/></svg>
+<span id="dist" class="dist">1108m</span>
+</div>
+<span id="hudPlayer" class="pill player-pill hidden">🏃 <b id="hudPlayerName">P1</b></span>
+<div class="stats">
+<span class="pill">TIME <b id="timer">0.0s</b></span>
+<span class="pill van">DELAY <b id="vans">×0</b></span>
+<button id="mute" class="mute" aria-label="Toggle sound">♪</button>
+</div>
+</div>
+<!-- touch controls -->
+<div id="pad" class="pad hidden">
+<div id="stick" class="stick" role="application" aria-label="Joystick: drag to move, further = faster">
+<span class="st-arrow up"></span><span class="st-arrow right"></span><span class="st-arrow down"></span><span class="st-arrow left"></span>
+<div class="stick-knob"></div>
+</div>
+<button id="bJ" class="jump" aria-label="Jump">JUMP</button>
+</div>
+<!-- title -->
+<section id="title" class="screen title hidden">
+<div class="title-wrap">
+<div class="banner"><h1>ಉಡುಪಿ ಚಿಂಗ್ ಚಾಂಗ್ ರನ್</h1></div>
+<div class="tape">THE UDUPI CHING CHONG RUN • ENKLE COASTAL SPRINT</div>
+<div class="row title-btns">
+<button id="playBtn" class="placard"><span>BALPULE! (SOLO)</span></button>
+<button id="tourneyBtn" class="placard alt small"><span>TOURNAMENT (ಪಂದ್ಯಕೂಟ)</span></button>
+</div>
+<button id="titleLeadBtn" class="link title-lead-link">🏆 Leaderboard (ವಿಜೇತರ ಪಟ್ಟಿ)</button>
+<p class="hint keys-hint"><kbd>←</kbd><kbd>→</kbd> Move &nbsp; <kbd>↑</kbd><kbd>↓</kbd> Sprint / Back &nbsp; <kbd>SPACE</kbd> Jump</p>
+<p class="hint touch-hint">Drag joystick to sprint (further = faster) · Tap <kbd>JUMP</kbd> to leap</p>
+</div>
+</section>
+<!-- tournament setup -->
+<section id="setup" class="screen select hidden">
+<button id="setupBackBtn" class="back">← BACK</button>
+<div class="sel-head">
+<h2>ಪಂದ್ಯಕೂಟದ ಆಟಗಾರರು</h2>
+<p>HOW MANY PLAYERS? • TOURNAMENT MODE</p>
+</div>
+<div class="panel setup-panel">
+<div class="setup-count-row">
+<span class="setup-count-lbl">Number of Players:</span>
+<div class="count-pills">
+<button type="button" class="count-pill" data-n="1">1 (Solo)</button>
+<button type="button" class="count-pill active" data-n="2">2 Players</button>
+<button type="button" class="count-pill" data-n="3">3 Players</button>
+<button type="button" class="count-pill" data-n="4">4 Players</button>
+<div class="stepper">
+<button type="button" id="decPlayer" class="step-btn" aria-label="Decrease">−</button>
+<b id="playerCountVal">2</b>
+<button type="button" id="incPlayer" class="step-btn" aria-label="Increase">+</button>
+</div>
+</div>
+</div>
+<div id="playerNamesList" class="player-names-list"></div>
+<div class="row">
+<button id="startTournamentBtn" class="placard"><span>BALPULE! (START RUNS)</span></button>
+</div>
+</div>
+</section>
+<!-- character select -->
+<section id="select" class="screen select hidden">
+<button id="backBtn" class="back">← BACK</button>
+<div class="sel-head">
+<div id="turnBadge" class="turn-badge hidden">PLAYER 1: <b>CHINTU</b>'S TURN • PICK YOUR RUNNER</div>
+<h2>ಏರೆಗ್ ಓಡೊಡು?</h2>
+<p>WHO WILL RUN? • PICK YOUR TULU RUNNER</p>
+</div>
+<div id="cards" class="cards"></div>
+<div class="legend">
+<span><i class="dot blue"></i><b>Traffic / Delivery Van</b> = 5s road delay</span>
+<span><i class="dot red"></i><b>Road Obstacle</b> = −50% ಜೀವ (Jeeva)</span>
+<span><i class="dot yel"></i><b>Barricade</b> = Jump it!</span>
+</div>
+</section>
+<!-- detained / delay -->
+<section id="detained" class="screen detain-top hidden">
+<div class="panel detain">
+<h2>YENTH SAAV MAARE!</h2>
+<p>Caught behind Coastal Cargo Tempo!<br>Clearing road in…</p>
+<div class="siren"><span id="count">5</span></div>
+</div>
+</section>
+<!-- game over -->
+<section id="over" class="screen dimmed hidden">
+<div class="panel over">
+<h2>RACE OVER!</h2>
+<p id="overTxt"></p>
+<div id="overTourneyMsg" class="tourney-status-msg hidden"></div>
+<div class="row">
+<button id="nextPlayerBtnOver" class="placard hidden"><span>NEXT RUNNER →</span></button>
+<button id="viewLeadBtnOver" class="placard hidden"><span>🏆 VIEW LEADERBOARD</span></button>
+<button id="retry" class="placard small"><span>TRY AGAIN (KODONJI SARTHI)</span></button>
+</div>
+<button id="change1" class="link">Change Runner</button>
+</div>
+</section>
+<!-- win -->
+<section id="won" class="screen win hidden">
+<div class="win-top">
+<div class="banner big"><h1>ಉಡುಪಿ ಮುಟ್ಟಿಯಾರ್!</h1></div>
+<div class="genz">MALPE BEACH VICTORY!</div>
+</div>
+<div class="win-bottom">
+<p id="winStats" class="stats-card"></p>
+<div id="wonTourneyMsg" class="tourney-status-msg hidden"></div>
+<div class="row">
+<button id="nextPlayerBtnWon" class="placard hidden"><span>NEXT RUNNER →</span></button>
+<button id="viewLeadBtnWon" class="placard hidden"><span>🏆 VIEW LEADERBOARD</span></button>
+<button id="again" class="placard"><span>RUN AGAIN (PIRTH BALPULE!)</span></button>
+<button id="share" class="placard alt small"><span>SHARE SCORE</span></button>
+</div>
+<button id="change2" class="link">Change Runner</button>
+</div>
+</section>
+<!-- tournament leaderboard -->
+<section id="leaderboard" class="screen win hidden">
+<div class="win-top">
+<div class="banner big"><h1>ಪಂದ್ಯಕೂಟದ ವಿಜೇತರು!</h1></div>
+<div class="genz">TOURNAMENT LEADERBOARD • WHO FINISHED IN LEAST TIME?</div>
+</div>
+<div class="win-bottom">
+<div id="winnerBanner" class="winner-box"></div>
+<div id="leadTable" class="lead-table"></div>
+<div class="row">
+<button id="newTourneyBtn" class="placard"><span>NEW TOURNAMENT (ಹೊಸ ಪಂದ್ಯ)</span></button>
+<button id="rematchBtn" class="placard alt small"><span>REMATCH (ಮತ್ತೆ ಆಡಿ)</span></button>
+</div>
+<button id="leadBackBtn" class="link">Main Menu (ಮುಖ್ಯ ಪುಟ)</button>
+</div>
+</section>
+<!-- persistent game name + credit -->
+<div id="brand" class="brand" aria-hidden="true">ಉಡುಪಿ ಚಿಂಗ್ ಚಾಂಗ್ ರನ್</div>
+<!-- visits counter removed -->
+<div class="credit">
+<div class="credit-txt"><span>Track:</span><b>Coastal Karnataka • Udupi</b><small>Tulu-English Runner Edition</small></div>
+<a id="linkedin" class="li" href="#" aria-label="Race Info">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h2v2h-2v-2zm0-10h2v8h-2V6z"/></svg>
+</a>
+</div>
+</main>
+<script src="assets/game.js" defer></script>
+</body>
+</html>
