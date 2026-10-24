@@ -32,6 +32,7 @@ An arcade highway runner through Coastal Karnataka. Sprint through the coastal h
   - Tropical coconut palm trees lining the beach promenade.
 
 - **⚡ Gameplay & Obstacles:**
+  - **Bus Detention & 10% Health Penalty:** Getting caught and put inside the police bus causes a 5-second road delay countdown (`5... 4... 3... 2... 1...`) and subtracts **10% health** (`-10% Jeeva`), with health bar shake and comic damage bursts.
   - Dual bus slaloms at 330m and 398m with tight 11.5–12m reaction windows.
   - Dynamic Udupi Cargo delivery tempos (`KA 20 C 9999`) traveling down the highway with warning flashers.
   - Authentic Tulu voice & comic dialogue bursts (*BALPULE!*, *BALPULE MAARE!*, *ODE BALPUVA!*, *MUUL BALA MAGA!*, *ONJI CHURU MAARE!*, *HALF WAY MAARE!*).
