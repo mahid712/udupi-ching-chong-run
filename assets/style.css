@@ -62,3 +62,5 @@
 #leaderboard .win-bottom{padding:10px 14px}
 .winner-box{margin-top:4px;padding:12px 18px}
 .lead-table{max-height:42vh}
+
+.detain-penalty{display:inline-block;background:var(--red2);color:#fff;font-weight:800;padding:2px 8px;border-radius:4px;margin:4px 0;font-size:13px;letter-spacing:.03em;box-shadow:2px 2px 0 var(--ink);animation:pulse .8s infinite alternate}
